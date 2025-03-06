@@ -14,6 +14,7 @@ load_dotenv()
 # pytesseract.pytesseract.tesseract_cmd = "/opt/homebrew/bin/tesseract"
 # pytesseract.pytesseract.tesseract_cmd = '/usr/bin/tesseract'
 
+# 구내식당의 카카오톡 채널 주소
 restuarant_url = {
     '대륭 18차': 'https://pf.kakao.com/_YgxdPT/posts',
     '대륭 17차': 'https://pf.kakao.com/_xfWxfCxj/posts',

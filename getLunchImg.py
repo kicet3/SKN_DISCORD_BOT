@@ -14,11 +14,13 @@ async def get_img(lunch_url):
             # .wrap_fit_thumb 요소들을 모두 선택
             post_items = await page.query_selector_all('.wrap_fit_thumb')
             img_urls = []
+            
             for div in post_items:
                 style = await div.get_attribute("style")
                 match = re.search(r'url\(["\']?(.*?)["\']?\)', style)
                 if match:
                     img_urls.append(match.group(1))
+            #최상단 게시글 이미지 썸네일이 점심 메뉴 이미지 라서 해당 이미지를 반환 하도록 구성함.
             return img_urls[0] if img_urls else None
         except Exception as e:
             print(e)
