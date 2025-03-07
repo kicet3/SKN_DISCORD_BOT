@@ -8,6 +8,7 @@ import getLunchImg as GI
 import re
 import os
 from dotenv import load_dotenv
+from datetime import datetime
 
 load_dotenv()
 
@@ -29,6 +30,13 @@ bot = commands.Bot(command_prefix='!', intents=intents)
 
 @bot.command(name='점심')
 async def lunch(ctx):
+    now_time = datetime.now()
+    start_time = now_time.replace(hour=10, minute=0, second=0, microsecond=0)
+    end_time = now_time.replace(hour=13, minute=0, second=0, microsecond=0)
+
+    if not (start_time <= now_time <= end_time):
+        await ctx.send("점심 메뉴는 오전 10시부터 오후 1시까지만 확인할 수 있습니다.")
+        return
     for target_key, target_url in restuarant_url.items():
         image_url = await GI.get_img(target_url)
         try: 
