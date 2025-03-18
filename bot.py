@@ -3,19 +3,19 @@ from discord.ext import commands
 import aiohttp
 import io
 import getLunchImg as GI  
+import datetime
 # import numpy as np
 # import cv2
 import re
 import os
 from dotenv import load_dotenv
-from datetime import datetime
 
 load_dotenv()
 
+# 테서렉트 경로 설정 (이미지 필터링 추가 시 사용)
 # pytesseract.pytesseract.tesseract_cmd = "/opt/homebrew/bin/tesseract"
 # pytesseract.pytesseract.tesseract_cmd = '/usr/bin/tesseract'
 
-# 구내식당의 카카오톡 채널 주소
 restuarant_url = {
     '대륭 18차': 'https://pf.kakao.com/_YgxdPT/posts',
     '대륭 17차': 'https://pf.kakao.com/_xfWxfCxj/posts',
@@ -30,13 +30,12 @@ bot = commands.Bot(command_prefix='!', intents=intents)
 
 @bot.command(name='점심')
 async def lunch(ctx):
-    now_time = datetime.now()
-    start_time = now_time.replace(hour=10, minute=0, second=0, microsecond=0)
-    end_time = now_time.replace(hour=13, minute=0, second=0, microsecond=0)
-
-    if not (start_time <= now_time <= end_time):
-        await ctx.send("점심 메뉴는 오전 10시부터 오후 1시까지만 확인할 수 있습니다.")
+    now = datetime.datetime.now()
+    if now.hour < 10 or now.hour > 15:
+        await ctx.send("점심 메뉴 정보는 오전 10시 ~ 오후 3시 사이에만 제공됩니다.")
+        await ctx.send(f"구내식당의 정보는 다음과 같습니다.\n 대륭 18차 : https://pf.kakao.com/_YgxdPT/posts\n 대륭 17차 : https://pf.kakao.com/_xfWxfCxj/posts\n 에이스 하이엔드 10차 : https://pf.kakao.com/_rXxkCn/posts")
         return
+    
     for target_key, target_url in restuarant_url.items():
         image_url = await GI.get_img(target_url)
         try: 
