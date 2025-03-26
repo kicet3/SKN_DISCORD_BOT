@@ -72,8 +72,8 @@ async def lunch(ctx):
 
 
 
-@bot.command(name='석식')
-async def lunch(ctx):
+@bot.command(name='석식', aliases=['저녁'])
+async def dinner(ctx):
     now = datetime.datetime.now()
     if now.hour < 15 or now.hour > 21:
         await ctx.send("석식 메뉴 정보는 오후 3시 ~  오후 9시 사이에만 제공됩니다.")
@@ -99,6 +99,7 @@ async def lunch(ctx):
     
     await ctx.send('메뉴 정보 전송 완료')
     return 
+
 @bot.command(name='명령어')
 async def helpcommand(ctx):
     await ctx.send('''!를 맨 앞에 붙여 명령어를 실행합니다.\n  점심 : 구내식당 메뉴 정보 (중식만 제공)\n  석식 : 구내식당 메뉴 정보 \n  명령어 : 명령어 정보를 제공합니다.''')
