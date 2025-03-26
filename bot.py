@@ -70,9 +70,38 @@ async def lunch(ctx):
     await ctx.send('메뉴 정보 전송 완료')
     return 
 
+
+
+@bot.command(name='석식')
+async def lunch(ctx):
+    now = datetime.datetime.now()
+    if now.hour < 15 or now.hour > 21:
+        await ctx.send("석식 메뉴 정보는 오후 3시 ~  오후 9시 사이에만 제공됩니다.")
+        await ctx.send(f"구내식당의 정보는 다음과 같습니다.\n 대륭 18차 : https://pf.kakao.com/_YgxdPT/posts\n 대륭 17차 : https://pf.kakao.com/_xfWxfCxj/posts\n 에이스 하이엔드 10차 : https://pf.kakao.com/_rXxkCn/posts")
+        return
+    await ctx.send("석식 메뉴 정보는 OCR로 텍스트 필터링을 하지 않기 때문에 석식 메뉴가 아니더라도 메뉴 정보를 전송합니다.(서버 성능이 좋지 않아... OCR 기능은 제외 했습니다)")
+    for target_key, target_url in restuarant_url.items():
+        image_url = await GI.get_img(target_url)
+        try: 
+            async with aiohttp.ClientSession() as session:
+                async with session.get(image_url) as resp:
+                    if resp.status != 200:
+                        await ctx.send("이미지 다운로드에 실패했습니다.")
+                        return
+
+                    data = await resp.read()
+                    send_image_data = io.BytesIO(data)
+                    await ctx.send(f"{target_key} 석식 메뉴\n", file=discord.File(send_image_data, filename="image.png"))
+
+        except Exception as e:
+            print(e)
+            await ctx.send(f"에러가 발생했습니다. 관리자에게 문의하거나 [{target_url}] 해당 URL에서 확인해주세요")
+    
+    await ctx.send('메뉴 정보 전송 완료')
+    return 
 @bot.command(name='명령어')
 async def helpcommand(ctx):
-    await ctx.send('''!를 맨 앞에 붙여 명령어를 실행합니다.\n  점심 : 구내식당 메뉴 정보 (중식만 제공)\n  명령어 : 명령어 정보를 제공합니다.''')
+    await ctx.send('''!를 맨 앞에 붙여 명령어를 실행합니다.\n  점심 : 구내식당 메뉴 정보 (중식만 제공)\n  석식 : 구내식당 메뉴 정보 \n  명령어 : 명령어 정보를 제공합니다.''')
     return 
 
 bot.run(os.getenv('DISCORD_API'))
