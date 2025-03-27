@@ -22,6 +22,10 @@ restuarant_url = {
     '에이스 하이엔드 10차': 'https://pf.kakao.com/_rXxkCn/posts'
 }
 
+restuarant_night_url = {
+    '대륭 17차': 'https://pf.kakao.com/_xfWxfCxj/posts',
+}
+
 pattern = re.compile(r'(중식|점심)')
 intents = discord.Intents.default()
 intents.message_content = True 
@@ -79,8 +83,8 @@ async def dinner(ctx):
         await ctx.send("석식 메뉴 정보는 오후 3시 ~  오후 9시 사이에만 제공됩니다.")
         await ctx.send(f"구내식당의 정보는 다음과 같습니다.\n 대륭 18차 : https://pf.kakao.com/_YgxdPT/posts\n 대륭 17차 : https://pf.kakao.com/_xfWxfCxj/posts\n 에이스 하이엔드 10차 : https://pf.kakao.com/_rXxkCn/posts")
         return
-    await ctx.send("석식 메뉴 정보는 OCR로 텍스트 필터링을 하지 않기 때문에 석식 메뉴가 아니더라도 메뉴 정보를 전송합니다.(서버 성능이 좋지 않아... OCR 기능은 제외 했습니다)")
-    for target_key, target_url in restuarant_url.items():
+    await ctx.send("석식 메뉴는 대륭 17차만 지원 합니다.")
+    for target_key, target_url in restuarant_night_url.items():
         image_url = await GI.get_img(target_url)
         try: 
             async with aiohttp.ClientSession() as session:
