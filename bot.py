@@ -12,7 +12,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# 테서렉트 경로 설정 (이미지 필터링 추가 시 사용)
+# 테서렉트 경로 설정 (이미지 필터링 추가 시 사용 OCR 기능)
 # pytesseract.pytesseract.tesseract_cmd = "/opt/homebrew/bin/tesseract"
 # pytesseract.pytesseract.tesseract_cmd = '/usr/bin/tesseract'
 
@@ -22,9 +22,7 @@ restuarant_url = {
     '에이스 하이엔드 10차': 'https://pf.kakao.com/_rXxkCn/posts'
 }
 
-restuarant_night_url = {
-    '대륭 17차': 'https://pf.kakao.com/_xfWxfCxj/posts',
-}
+
 
 pattern = re.compile(r'(중식|점심)')
 intents = discord.Intents.default()
@@ -53,6 +51,7 @@ async def lunch(ctx):
                     '''
                         주석 처리 된 부분은 이미지를 바탕으로 점심 | 중식 텍스트를 필터링하는 코드입니다.
                         현재 주석된 이유는 OCR 기능이 정확도가 떨어져 정상적인 데이터라도 인식하지 못하는 경우가 있어 주석처리 하였습니다.
+                        추가 디벨롭 하여 기능 추가 하실분은 이부분에서 적용하면 됩니다
                     '''
                     # image_data = io.BytesIO(data)
                     # image_bytes = np.asarray(bytearray(data), dtype=np.uint8)
@@ -60,7 +59,7 @@ async def lunch(ctx):
 
                     # gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
                     # text = pytesseract.image_to_string(gray, lang="kor")
-
+                    # OCR된 텍스트를 통해 중식,점심을 필터링하여 이미지 전송 
                     # if pattern.search(text):
                     send_image_data = io.BytesIO(data)
                     await ctx.send(f"{target_key} 점심 메뉴\n", file=discord.File(send_image_data, filename="image.png"))
@@ -75,7 +74,13 @@ async def lunch(ctx):
     return 
 
 
-
+'''
+대륭 17차만 석식을 제공하는 것으로 확인했는데 다른 곳도 만약 석식을 제공한다면 아래 url을 추가하면 됩니다.
+대륭 17차의 메뉴 정보가 갱신 되는 시점이 2시로 확인 되었으나 안정적인 정보 제공을 위해 3시 이후 제공하도록 수정했습니다.
+'''
+restuarant_night_url = {
+    '대륭 17차': 'https://pf.kakao.com/_xfWxfCxj/posts',
+}
 @bot.command(name='석식', aliases=['저녁'])
 async def dinner(ctx):
     now = datetime.datetime.now()
