@@ -9,7 +9,7 @@ import datetime
 import re
 import os
 from dotenv import load_dotenv
-
+import recommand
 load_dotenv()
 
 # 테서렉트 경로 설정 (이미지 필터링 추가 시 사용 OCR 기능)
@@ -34,8 +34,8 @@ bot = commands.Bot(command_prefix='!', intents=intents)
 async def lunch(ctx):
     now = datetime.datetime.now()
     if now.hour < 10 or now.hour > 15:
-        await ctx.send("점심 메뉴 정보는 오전 10시 ~ 오후 3시 사이에만 제공됩니다.")
-        await ctx.send(f"구내식당의 정보는 다음과 같습니다.\n 대륭 18차 : https://pf.kakao.com/_YgxdPT/posts\n 대륭 17차 : https://pf.kakao.com/_xfWxfCxj/posts\n 에이스 하이엔드 10차 : https://pf.kakao.com/_rXxkCn/posts")
+        await ctx.send("점심 메뉴 정보는 오전 10시 ~ 오후 3시 사이에만 제공됩니다.",delete_after=300)
+        await ctx.send(f"구내식당의 정보는 다음과 같습니다.\n 대륭 18차 : https://pf.kakao.com/_YgxdPT/posts\n 대륭 17차 : https://pf.kakao.com/_xfWxfCxj/posts\n 에이스 하이엔드 10차 : https://pf.kakao.com/_rXxkCn/posts",delete_after=300)
         return
     
     for target_key, target_url in restuarant_url.items():
@@ -44,7 +44,7 @@ async def lunch(ctx):
             async with aiohttp.ClientSession() as session:
                 async with session.get(image_url) as resp:
                     if resp.status != 200:
-                        await ctx.send("이미지 다운로드에 실패했습니다.")
+                        await ctx.send("이미지 다운로드에 실패했습니다.",delete_after=300)
                         return
 
                     data = await resp.read()
@@ -62,13 +62,13 @@ async def lunch(ctx):
                     # OCR된 텍스트를 통해 중식,점심을 필터링하여 이미지 전송 
                     # if pattern.search(text):
                     send_image_data = io.BytesIO(data)
-                    await ctx.send(f"{target_key} 점심 메뉴\n", file=discord.File(send_image_data, filename="image.png"))
+                    await ctx.send(f"{target_key} 점심 메뉴\n", file=discord.File(send_image_data, filename="image.png"),delete_after=600)
                     # else:
                     #     await ctx.send("점심 메뉴 정보가 존재하지 않습니다.")
 
         except Exception as e:
             print(e)
-            await ctx.send(f"에러가 발생했습니다. 관리자에게 문의하거나 [{target_url}] 해당 URL에서 확인해주세요")
+            await ctx.send(f"에러가 발생했습니다. 관리자에게 문의하거나 [{target_url}] 해당 URL에서 확인해주세요",delete_after=300)
     
     await ctx.send('메뉴 정보 전송 완료')
     return 
@@ -85,8 +85,8 @@ restuarant_night_url = {
 async def dinner(ctx):
     now = datetime.datetime.now()
     if now.hour < 15 or now.hour > 21:
-        await ctx.send("석식 메뉴 정보는 오후 3시 ~  오후 9시 사이에만 제공됩니다.")
-        await ctx.send(f"구내식당의 정보는 다음과 같습니다.\n 대륭 18차 : https://pf.kakao.com/_YgxdPT/posts\n 대륭 17차 : https://pf.kakao.com/_xfWxfCxj/posts\n 에이스 하이엔드 10차 : https://pf.kakao.com/_rXxkCn/posts")
+        await ctx.send("석식 메뉴 정보는 오후 3시 ~  오후 9시 사이에만 제공됩니다.",delete_after=300)
+        await ctx.send(f"구내식당의 정보는 다음과 같습니다.\n 대륭 18차 : https://pf.kakao.com/_YgxdPT/posts\n 대륭 17차 : https://pf.kakao.com/_xfWxfCxj/posts\n 에이스 하이엔드 10차 : https://pf.kakao.com/_rXxkCn/posts",delete_after=300)
         return
     await ctx.send("석식 메뉴는 대륭 17차만 지원 합니다.")
     for target_key, target_url in restuarant_night_url.items():
@@ -95,12 +95,12 @@ async def dinner(ctx):
             async with aiohttp.ClientSession() as session:
                 async with session.get(image_url) as resp:
                     if resp.status != 200:
-                        await ctx.send("이미지 다운로드에 실패했습니다.")
+                        await ctx.send("이미지 다운로드에 실패했습니다.",delete_after=300)
                         return
 
                     data = await resp.read()
                     send_image_data = io.BytesIO(data)
-                    await ctx.send(f"{target_key} 석식 메뉴\n", file=discord.File(send_image_data, filename="image.png"))
+                    await ctx.send(f"{target_key} 석식 메뉴\n", file=discord.File(send_image_data, filename="image.png"),delete_after=600)
 
         except Exception as e:
             print(e)
@@ -111,7 +111,38 @@ async def dinner(ctx):
 
 @bot.command(name='명령어')
 async def helpcommand(ctx):
-    await ctx.send('''!를 맨 앞에 붙여 명령어를 실행합니다.\n  점심 : 구내식당 메뉴 정보 (중식만 제공)\n  석식 : 구내식당 메뉴 정보 \n  명령어 : 명령어 정보를 제공합니다.''')
+    await ctx.send('''!를 맨 앞에 붙여 명령어를 실행합니다.\n  점심 : 구내식당 메뉴 정보 (중식만 제공)\n  석식 : 구내식당 메뉴 정보 \n  명령어 : 명령어 정보를 제공합니다.\n 메뉴 : !메뉴 [음식 이름]''')
     return 
+@bot.command(name='메뉴')
+async def recommend(ctx, menu_item: str):
+    places = recommand.get_place_info(menu_item)
+    if places:
+        await ctx.send(f'{menu_item} 음식점 정보를 추천합니다! (카카오 지도 API 검색 결과를 기반으로 합니다)',delete_after=300)
+        for place in places:
+            await ctx.send(embed=create_place_embed(place),delete_after=300)
+    else:
+        await ctx.send(f'죄송합니다. {menu_item}에 대한 정보는 아직 없습니다.')
+    return
+
+def create_place_embed(place: recommand.Place) -> discord.Embed:
+    # Embed 객체 생성
+    embed = discord.Embed(
+        title=place.name, # 장소 이름을 Embed의 제목으로 사용
+        description=f"**주소**: {place.address}", # 주소를 설명으로 사용
+        color=discord.Color.blue() # Embed 색상 설정 (예: 파란색)
+    )
+
+    if place.road_address:
+        embed.add_field(name="도로명 주소", value=place.road_address, inline=False) # 필드 추가
+    if place.phone:
+        embed.add_field(name="전화번호", value=place.phone, inline=False)
+
+    if place.place_url:
+        embed.url = place.place_url
+        embed.add_field(name="자세히 보기", value=f"[카카오맵에서 보기]({place.place_url})", inline=False)
+
+    embed.set_footer(text="카카오맵 검색 결과")
+
+    return embed
 
 bot.run(os.getenv('DISCORD_API'))
